@@ -10,18 +10,19 @@ public class MainManager : MonoBehaviour
     public int LineCount = 6;
     public Rigidbody Ball;
 
+    public Text bestScoreText;
     public Text ScoreText;
     public GameObject GameOverText;
     
     private bool m_Started = false;
-    private int m_Points;
+    private int m_points;
     
     private bool m_GameOver = false;
 
-    
-    // Start is called before the first frame update
     void Start()
     {
+        ShowBestScoreInMain();
+
         const float step = 0.6f;
         int perLine = Mathf.FloorToInt(4.0f / step);
         
@@ -55,17 +56,38 @@ public class MainManager : MonoBehaviour
         }
         else if (m_GameOver)
         {
+            DataHolder.instance.GetDataPoint(m_points);
+            ShowBestScoreInMain();
+
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+            }
+            if (Input.GetKeyDown(KeyCode.Escape))
+            {
+                SceneManager.LoadScene(0);
             }
         }
     }
 
     void AddPoint(int point)
     {
-        m_Points += point;
-        ScoreText.text = $"Score : {m_Points}";
+        m_points += point;
+        ScoreText.text = $"Score : {m_points}";
+    }
+
+    void ShowBestScoreInMain()
+    {
+        int bestScore = DataHolder.instance.bestScoreEver;
+        string playerName = DataHolder.instance.bestPlayerName;
+        if (bestScore == 0)
+        {
+            bestScoreText.text = " ";
+        }
+        else
+        {
+            bestScoreText.text = $"Best Score : {playerName} : {bestScore}";
+        }
     }
 
     public void GameOver()
